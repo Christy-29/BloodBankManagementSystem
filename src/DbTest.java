@@ -8,7 +8,7 @@ public class DbTest {
         String user = "root";
 
         // Replace with your actual MySQL password
-        String password = "christy@29";
+        String password = "mysql password";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
