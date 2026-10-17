@@ -1,0 +1,17 @@
+
+# Compiled Java files
+out/
+*.class
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Database exports and local data
+*.sql
+*.csv
+
+# IDE files
+.idea/
+.vscode/

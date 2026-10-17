@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank Management System</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js" defer></script>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-icon">🩸</div>
+            <div>
+                <h1>Blood Bank Management</h1>
+                <p>Inventory and hospital request monitoring</p>
+            </div>
+        </div>
+        <div class="live-indicator">
+            <span class="live-dot"></span> Dashboard
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="welcome">
+            <div>
+                <p class="eyebrow">BLOOD BANK OVERVIEW</p>
+                <h2>Dashboard</h2>
+                <p class="muted">Monitor donors, blood inventory and hospital requests.</p>
+            </div>
+            <button type="button" id="refreshAll" class="secondary-button">
+                ↻ Refresh Dashboard
+            </button>
+        </section>
+
+        <p id="dashboardMessage" class="message" role="status"></p>
+
+        <section class="stats-grid" aria-label="Dashboard statistics">
+            <article class="stat-card donors-card">
+                <div class="stat-heading">
+                    <span>Total Donors</span>
+                    <span class="stat-icon">👥</span>
+                </div>
+                <p class="stat-number" id="totalDonors">—</p>
+                <p class="stat-caption">Registered donors</p>
+            </article>
+
+            <article class="stat-card units-card">
+                <div class="stat-heading">
+                    <span>Available Units</span>
+                    <span class="stat-icon">🩸</span>
+                </div>
+                <p class="stat-number" id="totalUnits">—</p>
+                <p class="stat-caption">Across all blood groups</p>
+            </article>
+
+            <article class="stat-card pending-card">
+                <div class="stat-heading">
+                    <span>Pending Requests</span>
+                    <span class="stat-icon">⏳</span>
+                </div>
+                <p class="stat-number" id="pendingRequests">—</p>
+                <p class="stat-caption">Awaiting fulfilment</p>
+            </article>
+
+            <article class="stat-card fulfilled-card">
+                <div class="stat-heading">
+                    <span>Fulfilled Requests</span>
+                    <span class="stat-icon">✓</span>
+                </div>
+                <p class="stat-number" id="fulfilledRequests">—</p>
+                <p class="stat-caption">Successfully fulfilled</p>
+            </article>
+        </section>
+
+        <section class="panel alert-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">INVENTORY MONITOR</p>
+                    <h2>Low Stock Alerts</h2>
+                    <p class="muted">
+                        Blood groups with 5 units or fewer need attention.
+                    </p>
+                </div>
+                <div class="alert-count" id="lowStockCount">— alerts</div>
+            </div>
+
+            <div id="alertSummary" class="alert-summary">
+                Loading stock alerts...
+            </div>
+            <div id="lowStockList" class="low-stock-list"></div>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <h2>Blood Stock Inventory</h2>
+                    <p class="muted">Live units available for each blood group.</p>
+                </div>
+                <button type="button" id="refreshStock" class="secondary-button">
+                    Refresh Stock
+                </button>
+            </div>
+            <div id="stockList" class="stock-grid"></div>
+        </section>
+
+        <section class="panel">
+            <h2>Register a Donor</h2>
+            <p class="muted">Add a donor to the database.</p>
+            <form id="donorForm" class="form-grid">
+                <label>Donor Name
+                    <input name="name" maxlength="100" required>
+                </label>
+                <label>Age
+                    <input name="age" type="number" min="18" max="100" required>
+                </label>
+                <label>Gender
+                    <select name="gender" required>
+                        <option value="">Select gender</option>
+                        <option>Female</option>
+                        <option>Male</option>
+                        <option>Other</option>
+                    </select>
+                </label>
+                <label>Phone
+                    <input name="phone" maxlength="15" required>
+                </label>
+                <label>Blood Group
+                    <select name="blood_group" required>
+                        <option value="">Select blood group</option>
+                        <option>A+</option><option>A-</option>
+                        <option>B+</option><option>B-</option>
+                        <option>AB+</option><option>AB-</option>
+                        <option>O+</option><option>O-</option>
+                    </select>
+                </label>
+                <label>City
+                    <input name="city" maxlength="100" required>
+                </label>
+                <div class="form-actions">
+                    <button type="submit">Register Donor</button>
+                </div>
+            </form>
+            <p id="donorMessage" class="message" role="status"></p>
+        </section>
+
+        <section class="panel">
+            <h2>Record a Donation</h2>
+            <p class="muted">Use an existing donor ID from the list below.</p>
+            <form id="donationForm" class="form-grid">
+                <label>Donor ID
+                    <input name="donor_id" type="number" min="1" required>
+                </label>
+                <label>Units Donated
+                    <input name="units" type="number" min="1" max="5" required>
+                </label>
+                <div class="form-actions">
+                    <button type="submit">Record Donation</button>
+                </div>
+            </form>
+            <p id="donationMessage" class="message" role="status"></p>
+        </section>
+
+        <section class="panel">
+            <h2>Hospital Blood Request</h2>
+            <p class="muted">Submit a request for the required blood group.</p>
+            <form id="requestForm" class="form-grid">
+                <label>Patient Name
+                    <input name="patient_name" maxlength="100" required>
+                </label>
+                <label>Hospital Name
+                    <input name="hospital_name" maxlength="150" required>
+                </label>
+                <label>Blood Group
+                    <select name="blood_group" required>
+                        <option value="">Select blood group</option>
+                        <option>A+</option><option>A-</option>
+                        <option>B+</option><option>B-</option>
+                        <option>AB+</option><option>AB-</option>
+                        <option>O+</option><option>O-</option>
+                    </select>
+                </label>
+                <label>Units Required
+                    <input name="units_requested" type="number"
+                           min="1" max="1000" required>
+                </label>
+                <div class="form-actions">
+                    <button type="submit">Submit Blood Request</button>
+                </div>
+            </form>
+            <p id="requestMessage" class="message" role="status"></p>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <h2>Hospital Requests</h2>
+                    <p class="muted">Review requests and fulfil them when stock permits.</p>
+                </div>
+                <button type="button" id="refreshRequests" class="secondary-button">
+                    Refresh Requests
+                </button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Hospital</th>
+                            <th>Group</th>
+                            <th>Units</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTable">
+                        <tr><td colspan="8">Loading requests...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <h2>Registered Donors</h2>
+                    <p class="muted">Donors currently stored in MySQL.</p>
+                </div>
+                <button type="button" id="refreshDonors" class="secondary-button">
+                    Refresh Donors
+                </button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Name</th><th>Age</th>
+                            <th>Gender</th><th>Phone</th>
+                            <th>Blood Group</th><th>City</th>
+                                                                       <th>Units Donated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="donorsTable">
+                        <tr><td colspan="7">Loading donors...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Blood Bank Management System · Java · MySQL · JDBC</p>
+        <p>Dashboard refreshes automatically every 30 seconds.</p>
+    </footer>
+</body>
+</html>
